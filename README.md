@@ -15,7 +15,7 @@ All audio is analyzed **on-device**. Nothing is recorded, stored, or uploaded.
 The tuner is a small pipeline that turns a live microphone signal into a single
 "how in-tune am I" answer:
 
-```
+```text
  mic ──► Float32 samples ──► PitchTracker ──► PitchReading ──► UI
  (per platform)            (window→gate→detect→         (note, octave,
                             range-check→smooth)          cents, string)
@@ -93,7 +93,7 @@ button instead.
 
 ## Architecture / file map
 
-```
+```text
 src/
 ├─ app/
 │  ├─ index.tsx            Tuner screen
