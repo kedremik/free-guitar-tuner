@@ -18,26 +18,43 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# Generated native project folders (managed workflow)
+/ios
+/android
+
 # Metro
 .metro-health-check*
 
-# debug
+# NativeWind / Tailwind
+.nativewind/
+
+# Debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
 
 # macOS
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
+# Windows
+Thumbs.db
 
-# typescript
+# IDEs
+.idea/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Test output
+coverage/
+
+# TypeScript
 *.tsbuildinfo
 
-example
-
-# generated native folders
-/ios
-/android
+# Misc
+.cache/
+tmp/
