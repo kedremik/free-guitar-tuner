@@ -1,57 +1,47 @@
 # CLAUDE.md
 
-- **Expo SDK 56** — read versioned docs at <https://docs.expo.dev/versions/v56.0.0/> before writing code
-- Primary targets: **iOS and Android** (web enabled, no test runner)
+Cross-platform guitar tuner — Expo SDK 56. Primary targets **iOS + Android** (web
+enabled, no test runner). This file is a map, not a manual: it points to the
+sources of truth and lists the invariants that must hold. Keep it short; when a
+fact here is wrong or you learn a better command, fix it.
+
+## Start here (sources of truth)
+
+- `README.md` — how the app works (audio → pitch detection → UI pipeline),
+  architecture, and the full file map. Read it before changing tuner behavior.
+- `src/lib/pitch/` — pitch math + detection (`PitchTracker`, notes, PCM decode).
+- `src/hooks/use-pitch.ts` / `use-pitch.web.ts` — mic capture, split by platform.
+- `src/constants/theme.ts` — design tokens. Component prop types live with the
+  component (e.g. `src/components/themed-text.tsx`, `themed-view.tsx`).
+- Verify any new Expo API against versioned docs before using it:
+  <https://docs.expo.dev/versions/v56.0.0/>
 
 ## Commands
-
-Use **pnpm** (only). Native module (mic) requires a dev build — not Expo Go.
 
 ```bash
 pnpm install / pnpm start / pnpm ios / pnpm android / pnpm web / pnpm lint
 ```
 
-- `lightningcss` is pinned to `1.30.1` via `pnpm.overrides` — newer versions break
-  NativeWind v5 preview + react-native-css native bundling ("failed to deserialize
-  ... Specifier"). `.npmrc` sets `node-linker=hoisted` for Metro/autolinking.
+The mic is a native module, so device targets need a **dev build** (not Expo Go).
 
-## Structure
+## Invariants
 
-- Source in `src/` — aliases: `@/*` → `./src/*`, `@/assets/*` → `./assets/*`
-- Routes in `src/app/` (Expo Router, typed routes). Platform-specific files use `.web.tsx`/`.web.ts` suffix
-- React Compiler enabled — no manual `useMemo`/`useCallback` unless profiling shows need
+- **pnpm only.** Dependency pins go in `pnpm.overrides` (npm `overrides`/`resolutions`
+  are ignored). `.npmrc` keeps `node-linker=hoisted` for Metro/autolinking.
+- **Styling:** NativeWind `className` via the `@/tw` wrappers; do not add
+  `StyleSheet.create`. Reanimated elements need the `@/tw/animated` wrappers for
+  `className` to apply.
+- **React Compiler is on** — no manual `useMemo`/`useCallback` unless profiling
+  proves it's needed.
+- Platform forks use `.web.tsx` / `.web.ts` suffixes.
+- Request mic permission at point of use, not on launch.
+- Ship full implementations — no stubs, placeholders, or TODO-shaped code.
 
-## Styling
+## Gotchas
 
-- **NativeWind** — use `className` prop, never `StyleSheet.create`
-- Design tokens in `src/constants/theme.ts` (`Colors`, `Fonts`, `Spacing`, etc.) — prefer Tailwind classes that map to these
-
-## Theming
-
-- `useTheme()` (`src/hooks/use-theme.ts`) → active `Colors.light` / `Colors.dark`
-- `ThemedText` types: `'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code'`; optional `themeColor` to override
-- `ThemedView` type: `'background' | 'backgroundElement' | 'backgroundSelected'`
-
-## Navigation
-
-- Root layout (`src/app/_layout.tsx`): `ThemeProvider` → `AppTabs`
-- Native: `NativeTabs` from `expo-router/unstable-native-tabs`; Web: `Tabs`/`TabList`/`TabTrigger` from `expo-router/ui`
-
-## Animations
-
-- Reanimated 4.x `Keyframe` API; worklets must be `'worklet'` and use `scheduleOnRN` from `react-native-worklets` to bridge to React thread (see `src/components/animated-icon.tsx`)
-
-## Domain: Guitar Tuner
-
-from `expo-router/unstable-native-tabs`; Web: `Tabs`/`TabList`/`TabTrigger` from `expo-router/ui`
-
-## Animations
-
-- Reanimated 4.x `Keyframe` API; worklets must be `'worklet'` and use `scheduleOnRN` from `react-native-worklets` to bridge to React thread (see `src/components/animated-icon.tsx`)
-
-## Domain: Guitar Tuner
-
-- Mic permission via `expo-av`/`expo-audio` — request at point of use, not on launch
-- Pitch detection off main thread (worklet or native module)
-- Standard tuning: E2 (82.4 Hz), A2 (110 Hz), D3 (146.8 Hz), G3 (196 Hz), B3 (246.9 Hz), E4 (329.6 Hz)
-- Cent deviation from target frequency drives the tuner needle UI
+- `lightningcss` is pinned to `1.30.1` (`pnpm.overrides`). Newer versions break
+  NativeWind v5 preview + react-native-css **native** bundling
+  (`failed to deserialize … Specifier`). Web bundling hides it, so validate CSS
+  changes with `npx expo export --platform ios`.
+- Reanimated worklets must be `'worklet'` and bridge to React via `scheduleOnRN`
+  from `react-native-worklets` (see `src/components/animated-icon.tsx`).
