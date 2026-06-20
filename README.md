@@ -150,7 +150,9 @@ pnpm lint      # eslint
 
 > On the first native run, Expo will prebuild the iOS/Android projects and wire up
 > the microphone permission and the `@siteed/audio-studio` config plugin
-> (see `app.json`).
+> (see `app.json`). The app is **dev-build only** — Expo Go can't load the native
+> mic module. Note the iOS Simulator has no microphone input, so test pitch
+> detection on a real device (or use `pnpm web`).
 
 ---
 
