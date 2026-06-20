@@ -34,6 +34,17 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "@siteed/audio-studio",
+        {
+          "enableBackgroundAudio": false,
+          "enableNotifications": false,
+          "enablePhoneStateHandling": false,
+          "iosConfig": {
+            "microphoneUsageDescription": "Free Guitar Tuner uses the microphone to detect the pitch of your guitar. Audio is processed entirely on-device and is never recorded or shared."
+          }
+        }
       ]
     ],
     "experiments": {

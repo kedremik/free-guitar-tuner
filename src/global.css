@@ -1,3 +1,8 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css';
+
+/* Platform-specific font families (kept from the template) */
 :root {
   --font-display:
     Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
@@ -6,4 +11,76 @@
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
   --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+@media android {
+  :root {
+    --font-mono: monospace;
+    --font-rounded: normal;
+    --font-serif: serif;
+    --font-sans: normal;
+  }
+}
+
+@media ios {
+  :root {
+    --font-mono: ui-monospace;
+    --font-serif: ui-serif;
+    --font-sans: system-ui;
+    --font-rounded: ui-rounded;
+  }
+}
+
+/*
+ * Apple-style semantic colors. `light-dark()` drives web + Android; iOS swaps
+ * in the real native system colors via `platformColor()` below.
+ */
+:root {
+  --sf-bg: light-dark(rgb(250 250 252), rgb(0 0 0));
+  --sf-bg-2: light-dark(rgb(242 242 247), rgb(28 28 30));
+  --sf-text: light-dark(rgb(0 0 0), rgb(255 255 255));
+  --sf-text-2: light-dark(rgb(60 60 67 / 0.6), rgb(235 235 245 / 0.6));
+  --sf-separator: light-dark(rgb(60 60 67 / 0.18), rgb(84 84 88 / 0.55));
+
+  /* Tuner status palette */
+  --tuner-in-tune: light-dark(rgb(48 209 88), rgb(48 209 88));
+  --tuner-close: light-dark(rgb(255 214 10), rgb(255 214 10));
+  --tuner-off: light-dark(rgb(255 69 58), rgb(255 69 58));
+  --tuner-idle: light-dark(rgb(142 142 147), rgb(99 99 102));
+}
+
+@media ios {
+  :root {
+    --sf-bg: platformColor(systemBackground);
+    --sf-bg-2: platformColor(secondarySystemBackground);
+    --sf-text: platformColor(label);
+    --sf-text-2: platformColor(secondaryLabel);
+    --sf-separator: platformColor(separator);
+    --tuner-in-tune: platformColor(systemGreen);
+    --tuner-close: platformColor(systemYellow);
+    --tuner-off: platformColor(systemRed);
+    --tuner-idle: platformColor(systemGray);
+  }
+}
+
+/* Register the semantic colors as Tailwind theme colors so `bg-sf-bg`,
+ * `text-tuner-in-tune`, etc. all work as utility classes. */
+@layer theme {
+  @theme {
+    --color-sf-bg: var(--sf-bg);
+    --color-sf-bg-2: var(--sf-bg-2);
+    --color-sf-text: var(--sf-text);
+    --color-sf-text-2: var(--sf-text-2);
+    --color-sf-separator: var(--sf-separator);
+
+    --color-tuner-in-tune: var(--tuner-in-tune);
+    --color-tuner-close: var(--tuner-close);
+    --color-tuner-off: var(--tuner-off);
+    --color-tuner-idle: var(--tuner-idle);
+
+    /* Register the font utilities. The platform @media :root blocks above
+     * override these tokens at runtime (e.g. ui-rounded on iOS). */
+    --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  }
 }
