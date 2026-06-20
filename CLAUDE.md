@@ -5,9 +5,15 @@
 
 ## Commands
 
+Use **pnpm** (only). Native module (mic) requires a dev build — not Expo Go.
+
 ```bash
-npm start / npm run ios / npm run android / npm run lint
+pnpm install / pnpm start / pnpm ios / pnpm android / pnpm web / pnpm lint
 ```
+
+- `lightningcss` is pinned to `1.30.1` via `pnpm.overrides` — newer versions break
+  NativeWind v5 preview + react-native-css native bundling ("failed to deserialize
+  ... Specifier"). `.npmrc` sets `node-linker=hoisted` for Metro/autolinking.
 
 ## Structure
 
