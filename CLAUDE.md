@@ -37,6 +37,15 @@ The mic is a native module, so device targets need a **dev build** (not Expo Go)
 - Request mic permission at point of use, not on launch.
 - Ship full implementations — no stubs, placeholders, or TODO-shaped code.
 
+## Versioning & release notes
+
+- `.env.build` holds the internal version: `BUILD_MAJOR` / `BUILD_MINOR`.
+- **Major** = extensive overhaul (reset minor to 0). **Minor** = a new feature
+  or patch. Bug fixes and small tweaks do **not** bump — they ride the current
+  version.
+- Record every change in `ReleaseNotes.md` under its version (newest on top). When
+  you bump `.env.build`, add the matching heading there.
+
 ## Gotchas
 
 - `lightningcss` is pinned to `1.30.1` (`pnpm.overrides`). Newer versions break
