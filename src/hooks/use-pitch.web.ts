@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSharedValue } from 'react-native-reanimated';
 
 import { type PitchReading, PitchTracker } from '@/lib/pitch';
 
-import type { MicPermission, PitchState } from './pitch-types';
+import { type MicPermission, type PitchState, UI_UPDATE_INTERVAL_MS } from './pitch-types';
 
 /**
  * Web microphone pitch detection via the Web Audio API.
@@ -17,6 +18,7 @@ export function usePitch(): PitchState {
   const [permission, setPermission] = useState<MicPermission>('undetermined');
   const [reading, setReading] = useState<PitchReading | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const cents = useSharedValue<number | null>(null);
 
   const cleanupRef = useRef<(() => void) | null>(null);
 
@@ -35,12 +37,20 @@ export function usePitch(): PitchState {
     const tracker = new PitchTracker({ sampleRate: context.sampleRate, bufferSize: FFT_SIZE });
     const samples = new Float32Array(FFT_SIZE);
     let frame = 0;
+    let lastTextUpdate = 0;
 
     const tick = () => {
       analyser.getFloatTimeDomainData(samples);
-      // reading | null = update; undefined = throttled, keep current.
       const result = tracker.process(samples);
-      if (result !== undefined) setReading(result);
+      if (result !== undefined) {
+        // Full-rate needle via shared value; throttled text re-render.
+        cents.value = result ? result.cents : null;
+        const now = performance.now();
+        if (now - lastTextUpdate >= UI_UPDATE_INTERVAL_MS) {
+          lastTextUpdate = now;
+          setReading(result);
+        }
+      }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
@@ -53,7 +63,7 @@ export function usePitch(): PitchState {
       cleanupRef.current = null;
       setIsListening(false);
     };
-  }, []);
+  }, [cents]);
 
   const requestPermission = useCallback(async () => {
     try {
@@ -74,5 +84,5 @@ export function usePitch(): PitchState {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { reading, permission, isListening, requestPermission };
+  return { reading, cents, permission, isListening, requestPermission };
 }
