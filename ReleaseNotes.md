@@ -31,6 +31,16 @@ top.
   instead of a direct O(n²) NSDF — ~20× faster per analysis (~2 ms → ~0.1 ms at
   a 2048-sample window). This frees the JS thread and reduces audio-thread load.
   Dropped the `pitchfinder` dependency. (Partially addresses #4 / #6.)
+- Decoupled the UI from the audio rate to cut JS-thread load: the dial needle and
+  history graph now read a full-rate Reanimated **shared value** on the UI thread,
+  while the React text state (note, cents, string row) is throttled to ~14 Hz —
+  cutting full-screen re-renders ~4×. (Improves performance but does **not**
+  resolve the underlying iOS audio overload in #6, which is still open.)
+
+### Fixed
+
+- Silenced the Xcode linker warning `ignoring duplicate libraries: '-lc++'` via a
+  config plugin that adds `-no_warn_duplicate_libraries` to the app target.
 
 ## 1.0
 

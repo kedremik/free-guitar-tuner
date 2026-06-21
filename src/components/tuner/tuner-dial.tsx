@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
 import Animated, {
+  type SharedValue,
   useAnimatedProps,
-  useSharedValue,
+  useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle, G, Line, Polygon, Polyline, Text as SvgText } from 'react-native-svg';
@@ -43,13 +43,18 @@ function arcPoints(cx: number, cy: number, r: number, from: number, to: number, 
  * Semicircular tuner dial. A needle glides (real-time) to the current cent
  * deviation; ticks mark every 10 cents and a green band marks the in-tune
  * "good range" (±5 cents). At rest the needle returns to center, in grey.
+ *
+ * `cents` is a Reanimated shared value updated at the full analysis rate, so the
+ * needle animates entirely on the UI thread — moving the dial off React's
+ * re-render path (issue #6). The component itself only re-renders when `status`
+ * (the needle colour) changes, at the throttled text rate.
  */
 export function TunerDial({
   cents,
   status,
   size = 264,
 }: {
-  cents: number | null;
+  cents: SharedValue<number | null>;
   status: TuningStatus;
   size?: number;
 }) {
@@ -63,12 +68,13 @@ export function TunerDial({
   const needleLen = r - stroke;
   const base = size * 0.018;
 
-  const angle = useSharedValue(0);
-  useEffect(() => {
-    // Short tween: long enough to read smoothly, short enough that the needle
-    // visibly tracks the pitch in real time (readings arrive ~50×/s).
-    angle.value = withTiming(cents == null ? 0 : toAngle(cents), { duration: 45 });
-  }, [cents, angle]);
+  // Derive the needle angle from the shared value on the UI thread, with a short
+  // tween for smoothness. No React state, so no re-render as the pitch moves.
+  const angle = useDerivedValue(() => {
+    const c = cents.value;
+    const clamped = c == null ? 0 : Math.max(-RANGE, Math.min(RANGE, c));
+    return withTiming((clamped / RANGE) * 90, { duration: 60 });
+  });
   const needleProps = useAnimatedProps(() => ({ rotation: angle.value }));
 
   const flat = polar(cx, cy, r + stroke * 1.5, -90);

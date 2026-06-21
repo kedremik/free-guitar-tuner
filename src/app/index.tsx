@@ -14,9 +14,9 @@ import { Text, View } from '@/tw';
 
 export default function TunerScreen() {
   const insets = useSafeAreaInsets();
-  const { reading, permission, requestPermission } = usePitch();
+  const { reading, cents, permission, requestPermission } = usePitch();
   const status = tuningStatus(reading?.cents);
-  const history = usePitchHistory(reading);
+  const history = usePitchHistory(cents);
 
   // Once denied, iOS won't prompt again — the only way back is Settings (toggling
   // the mic there relaunches the app, so it picks up the grant on boot). On web,
@@ -39,7 +39,7 @@ export default function TunerScreen() {
 
           <View className="w-full items-center gap-6">
             <NoteDisplay reading={reading} status={status} />
-            <TunerDial cents={reading?.cents ?? null} status={status} />
+            <TunerDial cents={cents} status={status} />
           </View>
 
           <View className="w-full items-center gap-6">
