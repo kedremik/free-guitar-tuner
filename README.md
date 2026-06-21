@@ -38,11 +38,13 @@ soon as it's granted, and keeps the mic open until the screen unmounts.
 
 ### 2. Detecting the pitch
 
-Detection runs through the **McLeod Pitch Method** (the `Macleod` detector from
-[`pitchfinder`](https://github.com/peterkhayes/pitchfinder)) — the same
+Detection runs through the **McLeod Pitch Method** (MPM) — the same
 normalized-autocorrelation approach used by hardware tuners like Tartini. It's
 accurate for a single (monophonic) instrument and conveniently returns a *clarity*
-probability used to reject noise.
+probability used to reject noise. Our implementation (`src/lib/pitch/mpm.ts`)
+computes the autocorrelation via **FFT** ([`fft.js`](https://github.com/indutny/fft.js)),
+making each analysis ~20× cheaper than a direct O(n²) NSDF — fast enough to run
+~50×/s in real time without starving the audio thread.
 
 `PitchTracker` (`src/lib/pitch/tracker.ts`) wraps the raw detector to make it usable
 on a live stream:
@@ -125,7 +127,7 @@ src/
   colors (`platformColor` on iOS, `light-dark()` elsewhere) defined in
   `src/global.css`
 - **Reanimated 4** for the needle animation
-- **pitchfinder** (Macleod / MPM) for pitch detection
+- **FFT-accelerated McLeod Pitch Method** (`src/lib/pitch/mpm.ts`, using `fft.js`) for pitch detection
 - **@siteed/expo-audio-studio** for native real-time PCM streaming
 
 ---

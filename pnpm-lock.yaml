@@ -59,12 +59,12 @@ dependencies:
   expo-web-browser:
     specifier: ~56.0.5
     version: 56.0.5(expo@56.0.12)(react-native@0.85.3)
+  fft.js:
+    specifier: ^4.0.4
+    version: 4.0.4
   nativewind:
     specifier: 5.0.0-preview.4
     version: 5.0.0-preview.4(react-native-css@3.0.7)(tailwindcss@4.3.1)
-  pitchfinder:
-    specifier: ^2.3.4
-    version: 2.3.4
   react:
     specifier: 19.2.3
     version: 19.2.3
@@ -4741,6 +4741,10 @@ packages:
     resolution: {integrity: sha512-m6I8ALe4L4XpdETy7MJZWs6L1IVMbjs99bwbpIKphxX+0CTns4IKDWJY0LWfr4YsFjfg+z1TjzTMU8lKl8rG0w==}
     dev: false
 
+  /fft.js@4.0.4:
+    resolution: {integrity: sha512-f9c00hphOgeQTlDyavwTtu6RiK8AIFjD6+jvXkNkpeQ7rirK3uFWVpalkoS4LAwbdX7mfZ8aoBfFVQX1Re/8aw==}
+    dev: false
+
   /file-entry-cache@8.0.0:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
@@ -6305,10 +6309,6 @@ packages:
   /picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
-
-  /pitchfinder@2.3.4:
-    resolution: {integrity: sha512-GK1bWPaS1p2fB8ZUh1qXi/6iA55qxLoAS9NgqvReM5+tlUr1ch3dJvO9pikp7qpWLI7FlQBQhsl9eOwR6GAPwg==}
-    dev: false
 
   /plist@3.1.1:
     resolution: {integrity: sha512-ZIfcLJC+7E7FBFnDxm9MPmt7D+DidyQ26lewieO75AdhA2ayMtsJSES0iWzqJQbcVRSrTufQoy0DR94xHue0oA==}

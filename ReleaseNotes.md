@@ -25,6 +25,13 @@ top.
   decaying previous note and re-acquires the new one immediately, instead of
   staying latched until the old string dies out.
 
+### Performance
+
+- Pitch detection now computes the McLeod autocorrelation via **FFT** (`fft.js`)
+  instead of a direct O(n²) NSDF — ~20× faster per analysis (~2 ms → ~0.1 ms at
+  a 2048-sample window). This frees the JS thread and reduces audio-thread load.
+  Dropped the `pitchfinder` dependency. (Partially addresses #4 / #6.)
+
 ## 1.0
 
 Initial release.

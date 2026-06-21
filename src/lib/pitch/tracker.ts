@@ -1,12 +1,13 @@
-import { Macleod } from 'pitchfinder';
-
+import { createMpmDetector } from './mpm';
 import { type PitchReading, readingFromFrequency } from './notes';
 
 /**
- * Pitch detection is done with the McLeod Pitch Method (Macleod) — the same
+ * Pitch detection uses the McLeod Pitch Method (MPM) — the same
  * normalized-autocorrelation approach used by hardware tuners like Tartini. It
  * is accurate for monophonic instruments and conveniently returns a clarity
- * (probability) value we can use to reject noise.
+ * (probability) value we can use to reject noise. Our detector (`./mpm`)
+ * computes the autocorrelation via FFT, so each analysis is ~20× cheaper than a
+ * direct O(n²) NSDF — essential for the real-time loop.
  *
  * `PitchTracker` adapts the raw detector for a live microphone stream:
  *  - keeps a rolling window of the most recent samples (so readings update in
@@ -54,7 +55,7 @@ const ONSET_DECAY = 0.92;
 const ONSET_FLOOR = 0.01;
 
 export class PitchTracker {
-  private readonly detect: ReturnType<typeof Macleod>;
+  private readonly detect: ReturnType<typeof createMpmDetector>;
   private readonly bufferSize: number;
   private readonly rmsThreshold: number;
   private readonly clarityThreshold: number;
@@ -73,7 +74,7 @@ export class PitchTracker {
     this.clarityThreshold = options.clarityThreshold ?? 0.9;
     this.minIntervalMs = options.minIntervalMs ?? 12;
     this.buffer = new Float32Array(this.bufferSize);
-    this.detect = Macleod({ sampleRate: options.sampleRate, bufferSize: this.bufferSize });
+    this.detect = createMpmDetector({ sampleRate: options.sampleRate, bufferSize: this.bufferSize });
   }
 
   /** Feed a chunk of samples; see the class doc for the return contract. */
