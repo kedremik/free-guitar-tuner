@@ -59,15 +59,24 @@ export function usePitch(): PitchState {
     if (granted) await start();
   }, [start]);
 
-  // Auto-start when permission is already granted from a previous session.
+  // On mount: start if already granted, otherwise prompt. Without this, a fresh
+  // install sits in "undetermined" forever — the OS prompt never appears and the
+  // mic never opens.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const current = await AudioStudioModule.getPermissionsAsync();
-      const granted = current?.granted ?? current?.status === 'granted';
       if (cancelled) return;
-      setPermission(granted ? 'granted' : 'undetermined');
-      if (granted) await start();
+      const granted = current?.granted ?? current?.status === 'granted';
+      if (granted) {
+        setPermission('granted');
+        await start();
+      } else if (current?.canAskAgain ?? current?.status === 'undetermined') {
+        // First launch — trigger the system mic prompt (and start once allowed).
+        await requestPermission();
+      } else {
+        setPermission('denied');
+      }
     })();
     return () => {
       cancelled = true;
