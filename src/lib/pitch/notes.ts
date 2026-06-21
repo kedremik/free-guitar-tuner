@@ -66,9 +66,12 @@ export const STANDARD_TUNING: GuitarString[] = [40, 45, 50, 55, 59, 64].map((mid
   return { label: name, note: `${name}${octave}`, midi, frequency: frequencyForMidi(midi) };
 });
 
-/** The standard-tuning string whose target pitch is closest to `frequency`. */
-export function nearestString(frequency: number): GuitarString {
-  return STANDARD_TUNING.reduce((best, string) =>
+/** The string in `strings` whose target pitch is closest to `frequency`. */
+export function nearestString(
+  frequency: number,
+  strings: GuitarString[] = STANDARD_TUNING,
+): GuitarString {
+  return strings.reduce((best, string) =>
     Math.abs(centsBetween(frequency, string.frequency)) <
     Math.abs(centsBetween(frequency, best.frequency))
       ? string
@@ -85,13 +88,15 @@ export type PitchReading = {
   octave: number;
   /** Cents away from the nearest chromatic note, clamped to [-50, 50]. */
   cents: number;
-  /** Closest string in standard tuning. */
-  string: GuitarString;
   /** Detector confidence, 0–1. */
   clarity: number;
 };
 
-/** Turn a raw frequency into a fully-resolved reading for the UI. */
+/**
+ * Turn a raw frequency into a fully-resolved reading. Note/cents are absolute
+ * (tuning-independent); which *string* a pitch belongs to is resolved in the UI
+ * against the user's selected tuning via {@link nearestString}.
+ */
 export function readingFromFrequency(frequency: number, clarity: number): PitchReading {
   const nearestMidi = Math.round(midiFromFrequency(frequency));
   const { name, octave } = noteNameForMidi(nearestMidi);
@@ -101,7 +106,6 @@ export function readingFromFrequency(frequency: number, clarity: number): PitchR
     note: name,
     octave,
     cents: Math.max(-50, Math.min(50, cents)),
-    string: nearestString(frequency),
     clarity,
   };
 }

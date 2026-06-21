@@ -76,20 +76,23 @@ The result is a single `PitchReading` object consumed by the UI.
 
 ## Layout
 
-A two-tab app (native tabs on device, a top tab bar on web):
+A three-tab app (native tabs on device, a top tab bar on web):
 
 - **Tuner** (`src/app/index.tsx`) — the main screen, laid out top-to-bottom:
   - **Note display** — the big nearest-note letter + octave, with frequency and
     cents underneath. The letter turns green when in tune.
-  - **Cent meter** (`src/components/tuner/tuner-meter.tsx`) — a horizontal scale
-    with a needle that animates (Reanimated) to your deviation; a soft green band
-    marks the in-tune zone, and the needle is green in the center, red at the edges.
-  - **String row** — the six open strings; the one you're closest to lights up.
-- **Guide** (`src/app/explore.tsx`) — how to use it, the standard-tuning reference
+  - **Dial** (`src/components/tuner/tuner-dial.tsx`) — a semicircular gauge whose
+    needle animates (Reanimated, on the UI thread) to your deviation; ticks every
+    10 cents and a green band mark the in-tune "good range".
+  - **History graph** (`pitch-history-graph.tsx`) — a scrolling trace of recent
+    cent deviation.
+  - **String row** — the active tuning's strings; the one you're closest to lights up.
+- **Tunings** (`src/app/tunings.tsx`) — searchable, scrollable list of conventional
+  tunings; the choice is persisted and drives the Tuner.
+- **Guide** (`src/app/explore.tsx`) — how to use it, the active tuning's reference
   table, and a short note on what "cents" means.
 
-If microphone access is denied, the Tuner shows a `PermissionGate` with a retry
-button instead.
+If microphone access is denied, the Tuner shows a `PermissionGate` instead.
 
 ---
 
@@ -99,23 +102,30 @@ button instead.
 src/
 ├─ app/
 │  ├─ index.tsx            Tuner screen
+│  ├─ tunings.tsx          Tuning picker (search + list)
 │  └─ explore.tsx          Guide screen
 ├─ hooks/
 │  ├─ pitch-types.ts       Shared PitchState type + audio constants
 │  ├─ use-pitch.ts         Native mic capture (expo-audio-studio)
-│  └─ use-pitch.web.ts     Web mic capture (Web Audio API)
+│  ├─ use-pitch.web.ts     Web mic capture (Web Audio API)
+│  ├─ use-pitch-history.ts Rolling cents history for the graph
+│  └─ use-tuning.tsx       Active-tuning context, persisted (AsyncStorage)
 ├─ lib/
 │  ├─ cn.ts                Tailwind class-merge helper
 │  └─ pitch/
-│     ├─ notes.ts          Note/cents math + standard tuning
+│     ├─ notes.ts          Note/cents math + nearest-string
+│     ├─ tunings.ts        Tuning templates + loose search
+│     ├─ mpm.ts            FFT-accelerated McLeod detector
 │     ├─ tracker.ts        PitchTracker: window, gate, detect, smooth
 │     ├─ decode-pcm.ts     base64 16-bit PCM → Float32
 │     └─ index.ts          Barrel export
 ├─ components/tuner/
 │  ├─ note-display.tsx     Big note + octave + frequency
-│  ├─ tuner-meter.tsx      Animated cent needle + scale
-│  ├─ string-row.tsx       Six-string indicator
+│  ├─ tuner-dial.tsx       Animated cent dial (needle + ticks)
+│  ├─ pitch-history-graph.tsx  Scrolling cents trace
+│  ├─ string-row.tsx       Per-tuning string indicator
 │  ├─ permission-gate.tsx  Mic-denied fallback
+│  ├─ palette.ts           SVG colors / status → color
 │  └─ status.ts            cents → 'in-tune' | 'flat' | 'sharp'
 └─ tw/                     NativeWind-wrapped View/Text/etc. (className support)
 ```
@@ -126,8 +136,9 @@ src/
 - **NativeWind v5 / Tailwind CSS v4** for styling (`className`), with Apple system
   colors (`platformColor` on iOS, `light-dark()` elsewhere) defined in
   `src/global.css`
-- **Reanimated 4** for the needle animation
+- **Reanimated 4** for the needle animation, **react-native-svg** for the dial/graph
 - **FFT-accelerated McLeod Pitch Method** (`src/lib/pitch/mpm.ts`, using `fft.js`) for pitch detection
+- **AsyncStorage** to remember the selected tuning
 - **@siteed/expo-audio-studio** for native real-time PCM streaming
 
 ---

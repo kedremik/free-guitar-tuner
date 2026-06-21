@@ -9,6 +9,7 @@ import {
   Pressable as RNPressable,
   ScrollView as RNScrollView,
   Text as RNText,
+  TextInput as RNTextInput,
   View as RNView,
 } from 'react-native';
 import {
@@ -23,6 +24,11 @@ View.displayName = 'CSS(View)';
 export type TextProps = React.ComponentProps<typeof RNText> & { className?: string };
 export const Text = (props: TextProps) => useCssElement(RNText, props, { className: 'style' });
 Text.displayName = 'CSS(Text)';
+
+export type TextInputProps = React.ComponentProps<typeof RNTextInput> & { className?: string };
+export const TextInput = (props: TextInputProps) =>
+  useCssElement(RNTextInput, props, { className: 'style' });
+TextInput.displayName = 'CSS(TextInput)';
 
 // Pressable/ScrollView have prop unions too large for `useCssElement` to infer,
 // so the component arg is widened internally — the public props stay precise.
