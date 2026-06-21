@@ -1,3 +1,4 @@
+import { Linking, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NoteDisplay } from '@/components/tuner/note-display';
@@ -14,13 +15,18 @@ export default function TunerScreen() {
   const { reading, permission, requestPermission } = usePitch();
   const status = tuningStatus(reading?.cents);
 
+  // Once denied, iOS won't prompt again — the only way back is Settings (toggling
+  // the mic there relaunches the app, so it picks up the grant on boot). On web,
+  // re-requesting is the recoverable path.
+  const onGatePress = Platform.OS === 'web' ? requestPermission : () => Linking.openSettings();
+
   return (
     <View
       className="flex-1 bg-sf-bg"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom + BottomTabInset }}
     >
       {permission === 'denied' ? (
-        <PermissionGate onRequest={requestPermission} />
+        <PermissionGate onRequest={onGatePress} />
       ) : (
         <View className="flex-1 items-center justify-between px-6 py-8">
           <View className="items-center gap-1 pt-2">

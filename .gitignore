@@ -49,6 +49,8 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+# Internal build version is tracked in git (see CLAUDE.md "Versioning")
+!.env.build
 
 # Test output
 coverage/
