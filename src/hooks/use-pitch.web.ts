@@ -38,7 +38,9 @@ export function usePitch(): PitchState {
 
     const tick = () => {
       analyser.getFloatTimeDomainData(samples);
-      setReading(tracker.process(samples));
+      // reading | null = update; undefined = throttled, keep current.
+      const result = tracker.process(samples);
+      if (result !== undefined) setReading(result);
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
