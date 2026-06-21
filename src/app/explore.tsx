@@ -1,7 +1,7 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomTabInset } from '@/constants/theme';
-import { STANDARD_TUNING } from '@/lib/pitch';
+import { useTuning } from '@/hooks/use-tuning';
 import { ScrollView, Text, View } from '@/tw';
 
 const STEPS = [
@@ -13,6 +13,7 @@ const STEPS = [
 
 export default function GuideScreen() {
   const insets = useSafeAreaInsets();
+  const { tuning } = useTuning();
 
   return (
     <ScrollView
@@ -40,11 +41,11 @@ export default function GuideScreen() {
       </View>
 
       <View className="gap-3">
-        <Text className="font-rounded text-xl font-bold text-sf-text">Standard tuning</Text>
+        <Text className="font-rounded text-xl font-bold text-sf-text">{tuning.name} tuning</Text>
         <View className="overflow-hidden rounded-2xl bg-sf-bg-2">
-          {STANDARD_TUNING.map((string, index) => (
+          {tuning.strings.map((string, index) => (
             <View
-              key={string.note}
+              key={index}
               className="flex-row items-center justify-between px-4 py-3"
               style={index > 0 ? { borderTopWidth: 1, borderTopColor: 'rgba(128,128,128,0.18)' } : undefined}
             >

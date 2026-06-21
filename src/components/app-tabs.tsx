@@ -20,6 +20,15 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="tunings">
+        <NativeTabs.Trigger.Label>Tunings</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf="tuningfork"
+          src={require('@/assets/images/tabIcons/explore.png')}
+          renderingMode="template"
+        />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="explore">
         <NativeTabs.Trigger.Label>Guide</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon

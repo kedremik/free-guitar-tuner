@@ -1,20 +1,24 @@
-import { type PitchReading, STANDARD_TUNING } from '@/lib/pitch';
+import { type GuitarString } from '@/lib/pitch';
 import { cn } from '@/lib/cn';
 import { Text, View } from '@/tw';
 
 /**
- * The six open strings of standard tuning. The string closest to the current
+ * The six open strings of the active tuning. The string closest to the current
  * pitch lights up so the player knows which peg they're working on.
  */
-export function StringRow({ reading }: { reading: PitchReading | null }) {
-  const activeMidi = reading?.string.midi;
-
+export function StringRow({
+  strings,
+  activeMidi,
+}: {
+  strings: GuitarString[];
+  activeMidi: number | null;
+}) {
   return (
     <View className="w-full flex-row justify-between">
-      {STANDARD_TUNING.map((string) => {
+      {strings.map((string, index) => {
         const active = string.midi === activeMidi;
         return (
-          <View key={string.note} className="items-center gap-1.5">
+          <View key={index} className="items-center gap-1.5">
             <View
               className={cn(
                 'h-12 w-12 items-center justify-center rounded-full',

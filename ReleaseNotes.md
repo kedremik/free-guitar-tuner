@@ -4,6 +4,19 @@ Patch notes for Free Guitar Tuner. The internal version lives in `.env.build`
 (`BUILD_MAJOR.BUILD_MINOR`); see CLAUDE.md for how versions are bumped. Newest on
 top.
 
+## 1.2
+
+### Added
+
+- **Tuning templates** — a new **Tunings** tab with 21 conventional guitar tunings
+  (Standard, Drop D/C#/C/B/A, E♭/D/C/B Standard, Open D/Dm/C/G/Gm/E/A, DADGAD,
+  Double Drop D, All Fourths, New Standard Tuning).
+- **Loose search** over the list (matches names, nicknames like "Celtic"/"Fripp",
+  and note spellings like "EADGBE"/"DADGAD", with fuzzy subsequence matching).
+- The selected tuning is **remembered across launches** (persisted with
+  AsyncStorage) and defaults to Standard if none is stored. The tuner's string
+  indicator, header, and the Guide reference now reflect the active tuning.
+
 ## 1.1
 
 ### Added
