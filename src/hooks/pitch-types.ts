@@ -15,5 +15,7 @@ export type PitchState = {
 
 /** Audio capture settings shared by every platform. */
 export const SAMPLE_RATE = 44100;
-/** How often (ms) the native recorder emits a chunk of samples. */
-export const STREAM_INTERVAL_MS = 100;
+/** How often (ms) the native recorder emits a chunk of samples. Small (≈50 Hz)
+ * so the dial and history graph track the pitch in real time. Detection is cheap
+ * (~2 ms/analysis), so this is comfortably affordable. */
+export const STREAM_INTERVAL_MS = 20;

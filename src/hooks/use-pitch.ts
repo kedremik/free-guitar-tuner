@@ -25,9 +25,9 @@ export function usePitch(): PitchState {
   const handleSamples = useCallback((samples: Float32Array) => {
     const tracker = trackerRef.current;
     if (!tracker) return;
-    // `process` returns a reading once a window fills, or null for
-    // silence/noise. Setting null when already null is a no-op re-render.
-    setReading(tracker.process(samples));
+    // reading | null = update; undefined = no new analysis, keep current.
+    const result = tracker.process(samples);
+    if (result !== undefined) setReading(result);
   }, []);
 
   const start = useCallback(async () => {
